@@ -12,7 +12,10 @@ builder.Services.AddHostedService<RequestLoopService>();
 
 builder.Services.AddOpenTelemetry()
     .UseAzureMonitor()
-    .AddAzureMonitorProfiler();
+    .AddAzureMonitorProfiler(opt =>
+    {
+        opt.UploaderEnvironment = "Development";
+    });
 
 var app = builder.Build();
 
