@@ -2,6 +2,10 @@
 
 public class RequestLoopService(HttpClient client, ILogger<RequestLoopService> logger) : BackgroundService
 {
+    private static string BaseUrl => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"
+        ? "http://localhost:8080/"
+        : "http://localhost:5139/";
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (true)
@@ -10,8 +14,8 @@ public class RequestLoopService(HttpClient client, ILogger<RequestLoopService> l
                 break;
             try
             {
-                await client.GetAsync("http://localhost:5139/Request/Noop", stoppingToken); //Succeeds
-                await client.GetAsync("http://localhost:5139/Request/HttpClient", stoppingToken); //Fails
+                await client.GetAsync($"{BaseUrl}Request/Noop", stoppingToken); //Succeeds
+                await client.GetAsync($"{BaseUrl}Request/HttpClient", stoppingToken); //Fails
                 await Task.Delay(1000, stoppingToken);
             }
             catch (OperationCanceledException ex) when (ex.CancellationToken == stoppingToken)
